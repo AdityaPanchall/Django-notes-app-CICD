@@ -1,6 +1,7 @@
-version : "3.3"
-services :
-  web 00:
+version: "3.3"
+
+services:
+  web:
     image: adityapanchall/notes-app-cicd:latest
-     ports :
-         - "8000:8000"
+    ports:
+      - "8000:8000"
