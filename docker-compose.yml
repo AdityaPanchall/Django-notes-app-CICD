@@ -1,6 +1,6 @@
 version : "3.3"
 services :
-  web :
-     image: amitabhdevops/cicd-note-app:latest
+  web 00:
+    image: adityapanchall/notes-app-cicd:latest
      ports :
          - "8000:8000"
