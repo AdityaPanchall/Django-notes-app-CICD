@@ -1,42 +1,56 @@
-pipeline {
+//Syntax for shared Library 
+@Library("Shared") _
+
+pipeline{
+    agent { label "vinod" }
     
-    agent any
-    
+    //Accessing the function of shared library 
     stages{
-        stage("Clone The code..."){
+        stage("Hello"){
             steps{
-                echo "Cloning the code"
-                git url: "https://github.com/Amitabh-DevOps/Django-notes-app-declarative-cidd.git", branch: "main"
-            }
-        }
-        stage("Build and Test..."){
-            steps{
-                echo "Building the Docker image(Container)"
-                sh "docker build . -t cicd-note-app:latest"
-            }
-        }
-        stage("Push build to Docker Hub"){
-            steps{
-                echo "Pushing build to DockerHub..."
-                withCredentials([
-                    usernamePassword(
-                        credentialsId: "dockerHub",
-                        passwordVariable: "dockerHubPass",
-                        usernameVariable: "dockerHubUser"
-                    )    
-                ]){
-                    sh "docker tag cicd-note-app ${env.dockerHubUser}/cicd-note-app:latest"
-                    sh "docker login -u ${env.dockerHubUser} -p ${env.dockerHubPass}"
-                    sh "docker push ${env.dockerHubUser}/cicd-note-app:latest"
+                script{
+                    hello()
                 }
             }
         }
-        stage("Deploy the Container"){
+        
+        stage("Clone the Code"){
             steps{
-                echo "Deploying docker Container..."
-                sh "docker compose down && docker compose up -d"
-                
+                echo "Cloning the code"
+                git url: "Your_Github_URL", branch: "main"
+                echo "code cloned successfully"
             }
+        }
+        
+        stage("Build and Test.."){
+            steps{
+                echo "Building the docker image"
+                sh "docker build -t notes-app-cicd:latest ."
+            }
+        }
+            
+        stage("Push Build to Docker Hub"){
+            steps{
+                echo "Pushing Build to DockerHub.."
+                withCredentials([
+                    usernamePassword(
+                        credentialsId: "DockerhubCred",
+                        passwordVariable: "dockerHubPass",
+                        usernameVariable: "dockerHubUser"
+                    )
+                ]){
+                    sh "docker tag notes-app-cicd ${env.dockerHubUser}/notes-app-cicd:latest"
+                    sh "docker login -u ${env.dockerHubUser} -p ${env.dockerHubPass}"
+                    sh "docker push ${env.dockerHubUser}/notes-app-cicd:latest"
+                }
+            }
+        }
+        
+        stage("Deploy"){
+            steps{
+                   echo "This is deploying the code"
+                   sh "docker-compose down && docker-compose up -d"
+             }
         }
     }
 }
